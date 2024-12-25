@@ -54,12 +54,12 @@ public class BookService(IContext _context) : IBook
     public async Task<Response<List<BooksWithAuthorsDto>>> BooksWithAuthors()
     {
         var sqlBooks = @"select * from Books";
-        var sqlAuthors = @"select * from Authors";
+        var sqlAuthors = @"select * from Authors where AuthorId = @id";
         var res = await _context.Connection().QueryAsync<BooksWithAuthorsDto>(sqlBooks);
         var books = res.ToList();
         foreach (var x in books)
         {
-            var resA = await _context.Connection().QueryAsync<Author>(sqlAuthors);
+            var resA = await _context.Connection().QueryAsync<Author>(sqlAuthors, new {id = x.AuthorId});
             x.Authors = resA.ToList();
         }
         return new Response<List<BooksWithAuthorsDto>>(books);
@@ -79,5 +79,12 @@ public class BookService(IContext _context) : IBook
         var sql = @"select * from Books where AuthorId = @id";
         var res = await _context.Connection().QueryAsync<Book>(sql, new { id });
         return new Response<List<Book>>(res.ToList());
+    }
+
+    public async Task<Response<List<BookAndAuthor>>> BookAndAuthor()
+    {
+        var sqlBooks = @"select * from Books as b join Authors as a on b.AuthorId = a.AuthorId";
+        var res = await _context.Connection().QueryAsync<BookAndAuthor>(sqlBooks);
+        return new Response<List<BookAndAuthor>>(res.ToList());
     }
 }

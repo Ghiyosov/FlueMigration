@@ -32,4 +32,7 @@ public class BookController(IBook _book) : ControllerBase
     
     [HttpGet("GetBooksByAuthorId/{id}")]
     public async Task<Response<List<Book>>> GetBooksByAuthorId(int id)=> await _book.GetBooksByAuthorId(id);
+    
+    [HttpGet("GetBooksAndAuthors")]
+    public async Task<Response<List<BookAndAuthor>>> BookAndAuthor()=> await _book.BookAndAuthor();
 }

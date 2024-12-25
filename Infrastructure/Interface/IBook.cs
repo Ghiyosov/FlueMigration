@@ -14,4 +14,5 @@ public interface IBook
     public Task<Response<List<BooksWithAuthorsDto>>> BooksWithAuthors();
     public Task<Response<List<Book>>> GetBooksByAuthor(string author);
     public Task<Response<List<Book>>> GetBooksByAuthorId(int id);
+    public Task<Response<List<BookAndAuthor>>> BookAndAuthor();
 }
