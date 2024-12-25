@@ -1,5 +1,6 @@
 using System.Net;
 using Dapper;
+using Domein.DTOs;
 using Domein.Models;
 using Infrastructure.DataContext;
 using Infrastructure.Interface;
@@ -48,5 +49,35 @@ public class BookService(IContext _context) : IBook
         return res == 0
             ? new Response<bool>(HttpStatusCode.InternalServerError, "Internal Server Error")
             : new Response<bool>(HttpStatusCode.Created, "Deleted");
+    }
+
+    public async Task<Response<List<BooksWithAuthorsDto>>> BooksWithAuthors()
+    {
+        var sqlBooks = @"select * from Books";
+        var sqlAuthors = @"select * from Authors";
+        var res = await _context.Connection().QueryAsync<BooksWithAuthorsDto>(sqlBooks);
+        var books = res.ToList();
+        foreach (var x in books)
+        {
+            var resA = await _context.Connection().QueryAsync<Author>(sqlAuthors);
+            x.Authors = resA.ToList();
+        }
+        return new Response<List<BooksWithAuthorsDto>>(books);
+    }
+
+    public async Task<Response<List<Book>>> GetBooksByAuthor(string author)
+    {
+        var sqlBooks = @"select * from Books 
+         where AuthorId = select AuthorId from Authors
+            where Name = @author";
+        var res = await _context.Connection().QueryAsync<Book>(sqlBooks, new { author });
+        return new Response<List<Book>>(res.ToList());
+    }
+
+    public async Task<Response<List<Book>>> GetBooksByAuthorId(int id)
+    {
+        var sql = @"select * from Books where AuthorId = @id";
+        var res = await _context.Connection().QueryAsync<Book>(sql, new { id });
+        return new Response<List<Book>>(res.ToList());
     }
 }
