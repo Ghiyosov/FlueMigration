@@ -1,3 +1,4 @@
+using Domein.DTOs;
 using Domein.Models;
 using Infrastructure.Interface;
 using Infrastructure.Responses;
@@ -22,4 +23,13 @@ public class BookController(IBook _book) : ControllerBase
     
     [HttpDelete("DeleteBook/{id}")]
     public async Task<Response<bool>> DeleteBook(int id) => await _book.DeleteBook(id);
+
+    [HttpGet("GetBooksWhithAuthors")]
+    public async Task<Response<List<BooksWithAuthorsDto>>> GetBooksWhithAuthors() => await _book.BooksWithAuthors();
+
+    [HttpGet("GetBooksByAuthor/{author}")]
+    public async Task<Response<List<Book>>> GetBooksByAuthor(string author) => await _book.GetBooksByAuthor(author);
+    
+    [HttpGet("GetBooksByAuthorId/{id}")]
+    public async Task<Response<List<Book>>> GetBooksByAuthorId(int id)=> await _book.GetBooksByAuthorId(id);
 }
